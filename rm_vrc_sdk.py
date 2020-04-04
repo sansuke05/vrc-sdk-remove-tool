@@ -5,26 +5,43 @@ import shutil
 
 def rm_vrcsdk(project_path):
     sdk_dir = project_path + 'Assets\\VRCSDK'
-    plugin_dir = project_path + 'Assets\\Plugins\\VRCSDK'
+    plugin_dir_2017 = project_path + 'Assets\\Plugins\\VRCSDK'
+    plugin_dir_2018 = sdk_dir + '\\Plugins'
+    result = ''
+
+    is_exists_2017_plugin = os.path.exists(plugin_dir_2017) # trueなら2017SDK
+    is_exists_2018_plugin = os.path.exists(plugin_dir_2018) # trueなら2018SDK
 
     if not os.path.exists(sdk_dir):
         return 'VRCSDKフォルダが見つかりませんでした'
     
-    if not os.path.exists(plugin_dir):
+    # pluginを先に削除
+    if is_exists_2017_plugin:
+        result = rm_plugin(plugin_dir_2017)
+    elif is_exists_2018_plugin:
+        result = rm_plugin(plugin_dir_2018)
+    else:
         return 'Plugins/VRCSDKフォルダが見つかりませんでした'
 
+    # pluginを削除した結果、エラーがあれば関数を終了
+    if result != '':
+        return result
+
+    # SDKを削除
     try:
         shutil.rmtree(sdk_dir + '\\')
         os.remove(sdk_dir + '.meta')
     except:
         return sdk_dir + 'の削除に失敗しました'
-    
+    return ''
+
+
+def rm_plugin(plugin_dir):
     try:
         shutil.rmtree(plugin_dir + '\\')
         os.remove(plugin_dir + '.meta')
     except:
         return plugin_dir + 'の削除に失敗しました'
-
     return ''
 
 
