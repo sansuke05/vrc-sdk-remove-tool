@@ -7,6 +7,7 @@ def rm_vrcsdk(project_path):
     sdk_dir = project_path + 'Assets\\VRCSDK'
     plugin_dir_2017 = project_path + 'Assets\\Plugins\\VRCSDK'
     plugin_dir_2018 = sdk_dir + '\\Plugins'
+    udon_dir = project_path + 'Assets\\Udon'
     result = ''
 
     is_exists_2017_plugin = os.path.exists(plugin_dir_2017) # trueなら2017SDK
@@ -17,31 +18,32 @@ def rm_vrcsdk(project_path):
     
     # pluginを先に削除
     if is_exists_2017_plugin:
-        result = rm_plugin(plugin_dir_2017)
+        result = rm_dir_and_metafile(plugin_dir_2017)
     elif is_exists_2018_plugin:
-        result = rm_plugin(plugin_dir_2018)
+        result = rm_dir_and_metafile(plugin_dir_2018)
     else:
         return 'Plugins/VRCSDKフォルダが見つかりませんでした'
 
-    # pluginを削除した結果、エラーがあれば関数を終了
+    # SDKを削除
+    result = rm_dir_and_metafile(sdk_dir)
+
+    # 削除した結果、エラーがあれば関数を終了
     if result != '':
         return result
 
-    # SDKを削除
-    try:
-        shutil.rmtree(sdk_dir + '\\')
-        os.remove(sdk_dir + '.meta')
-    except:
-        return sdk_dir + 'の削除に失敗しました'
+    # Udonフォルダがあれば削除
+    if os.path.exists(udon_dir):
+        return rm_dir_and_metafile(udon_dir)
+    
     return ''
 
 
-def rm_plugin(plugin_dir):
+def rm_dir_and_metafile(dir_path):
     try:
-        shutil.rmtree(plugin_dir + '\\')
-        os.remove(plugin_dir + '.meta')
+        shutil.rmtree(dir_path + '\\')
+        os.remove(dir_path + '.meta')
     except:
-        return plugin_dir + 'の削除に失敗しました'
+        return dir_path + 'の削除に失敗しました'
     return ''
 
 
